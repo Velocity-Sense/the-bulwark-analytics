@@ -1,4 +1,3 @@
-# dbt_project.yml
 name: 'the_bulwark'
 profile: 'the_bulwark'
 version: '1.0.0'

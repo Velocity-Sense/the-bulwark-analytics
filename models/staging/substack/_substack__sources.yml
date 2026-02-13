@@ -1,0 +1,46 @@
+sources:
+  - name: substack
+    description: Shared data setup by the Substack team from its Snowflake database 
+    database: substack
+    schema: thebulwark
+    config:
+      enabled: true
+    tables:
+
+      - name: subscription_stats
+        identifier: thebulwark_subscription_stats
+        description: Subscription stats data. One record per subscription_id.
+        columns:
+        - name: subscription_id
+          description: Primary key for subscription stats data.
+          tests:
+          - unique
+          - not_null
+
+      - name: churned_subscriptions
+        identifier: thebulwark_churned_subscriptions
+        description: Churned subscriptions data. There is no unique identifier. One-to-many subscription_ids
+
+      - name: user_invoices
+        identifier: thebulwark_user_invoices
+        description: Stripe invoice data. 
+        columns:
+        - name: user_invoice_id
+          description: Primary key for user invoice data. One-to-many stripe_subscription_ids
+          tests:
+          - unique
+          - not_null
+
+      - name: subscription_events
+        identifier: thebulwark_subscription_events
+        description: Subscription events data. There is no unique identifier. There are 5 non-unique ids of 4M+ records so likely anomalies
+
+      - name: coupons
+        identifier: thebulwark_coupons
+        description: Coupons data. One record per coupon.
+        columns:
+        - name: id
+          description: Primary key for coupons.
+          tests:
+          - unique
+          - not_null
