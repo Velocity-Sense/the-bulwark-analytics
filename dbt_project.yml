@@ -23,6 +23,8 @@ models:
         core:
           +materialized: table
           +enabled: true
+          reports:
+            +schema: reports
     staging:
       +materialized: view
       other:
