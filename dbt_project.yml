@@ -23,17 +23,6 @@ models:
         core:
           +materialized: table
           +enabled: true
-          reports:
-            +schema: final_reports
-        intermediate:
-          +enabled: true
-        strategy:
-          +enabled: true
-          +schema: strategy
-        operations:
-          +materialized: table
-          +enabled: true
-          +schema: operations
     staging:
       +materialized: view
       other:
