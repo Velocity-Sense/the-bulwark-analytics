@@ -1,4 +1,4 @@
--- models/marts/operations/rpt_upcoming_annual_renewals.sql
+-- models/marts/core/rpt_upcoming_annual_renewals.sql
 
 with final as (
 
