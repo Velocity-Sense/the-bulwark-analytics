@@ -1,4 +1,5 @@
 -- models/marts/core/reports/rpt_upcoming_annual_renewals_by_price.sql
+-- Excludes free-trial promos
 
 with 
 
@@ -33,7 +34,8 @@ labeled as (
 
   select
     u.end_month,
-    case when p.user_id is not null then 'promo' else 'full_price' end as price_bucket,
+    case when p.user_id is not null and p.is_trial_promo = false then 'promo'
+        else 'full_price' end as price_bucket,
     u.user_id,
     u.expiring_value
 
