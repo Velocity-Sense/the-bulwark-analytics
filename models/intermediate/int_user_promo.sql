@@ -8,12 +8,18 @@ subscription_events as (
 
 ),
 
-final as (
+promos as (
+
+    select * from {{ ref('stg_substack__coupons') }}
+
+),
+
+users as (
 
     select
 
         user_id,
-        nullif(trim(event_data:coupon::string), '') as coupon_value,
+        nullif(trim(event_data:coupon::string), '') as coupon_id,
         min(timestamp)::timestamp as first_coupon_ts
 
     from subscription_events
@@ -25,6 +31,24 @@ final as (
         partition by user_id
         order by first_coupon_ts
     ) = 1
+
+),
+
+final as (
+
+    select
+        u.user_id,
+        u.coupon_id,
+        p.name,
+        p.trial_period_days,
+
+        -- distinguish between if promo is a free trial versus actual discounted promo
+        case when p.trial_period_days is not null then true else false end as is_trial_promo,
+        
+        first_coupon_ts
+    from users u
+    left join promos p
+        on u.coupon_id = p.coupon_id
 
 )
 
