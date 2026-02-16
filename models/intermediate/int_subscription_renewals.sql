@@ -3,7 +3,7 @@ with
 
 user_invoices as (
 
-    select * from {{ ref('stg_user_invoices') }}
+    select * from {{ ref('stg_substack__user_invoices') }}
 
 ),
 

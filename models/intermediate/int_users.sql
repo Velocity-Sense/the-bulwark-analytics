@@ -2,7 +2,7 @@
 
 with final as (
 
-    select * from {{ ref('stg_subscription_stats') }}
+    select * from {{ ref('stg_substack__subscription_stats') }}
 
 )
 

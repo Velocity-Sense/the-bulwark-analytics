@@ -1,4 +1,8 @@
-with base as (
+-- models/marts/core/reports/rpt_subscription_renewals.sql
+
+with 
+
+base as (
 
     select *
     from {{ ref('fct_subscription_renewals') }}
@@ -8,6 +12,7 @@ with base as (
 historical as (
 
     select
+
         date_trunc('month', end_dt) as dt,
         period_type,
 
@@ -34,6 +39,7 @@ historical as (
 upcoming as (
 
     select
+
         date_trunc('month', end_dt) as dt,
         period_type,
 
@@ -56,11 +62,12 @@ upcoming as (
       and refund_amount is null
     group by 1, 2
 
-)
+),
 
-,unioned as (
+unioned as (
 
     select
+
         dt,
         period_type,
         upcoming_payments,
@@ -69,11 +76,13 @@ upcoming as (
         successful_payments,
         opportunity_value,
         unsuccessful_payments
+
     from historical
 
     union all
 
     select
+
         dt,
         period_type,
         upcoming_payments,
@@ -82,11 +91,13 @@ upcoming as (
         successful_payments,
         opportunity_value,
         unsuccessful_payments
+
     from upcoming
 
 )
 
 select
+
     dt,
     period_type,
 
