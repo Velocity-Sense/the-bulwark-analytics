@@ -43,6 +43,8 @@ select
     links_clicked,
     num_web_post_views,
     num_unique_web_posts_seen,
+    num_comments,
+    num_shares,
 
     /* recency fields */
     last_opened_at,
