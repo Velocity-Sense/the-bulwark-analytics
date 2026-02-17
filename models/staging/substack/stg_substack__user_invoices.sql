@@ -1,4 +1,4 @@
--- models/staging/substack/stg_user_invoices.sql
+-- models/staging/substack/stg_substack__user_invoices.sql
 
 with
 

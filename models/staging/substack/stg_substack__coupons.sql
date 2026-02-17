@@ -1,4 +1,4 @@
--- models/staging/substack/stg_coupons.sql
+-- models/staging/substack/stg_substack__coupons.sql
 
 with 
 
