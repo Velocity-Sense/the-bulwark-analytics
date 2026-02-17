@@ -1,10 +1,99 @@
--- models/marts/core/dim_and_fact/fct_subscription_renewals.sql
+-- models/marts/core/core/fct_subscription_renewals.sql
 
-with 
+with
+
+base as (
+
+    select *
+    from {{ ref('int_subscription_renewals') }}
+
+),
+
+historical as (
+
+    select
+
+        date_trunc('month', end_dt) as dt,
+        *
+
+    from base
+    where date_trunc('month', end_dt) < date_trunc('month', current_date)
+
+),
+
+upcoming as (
+
+    select
+
+        date_trunc('month', end_dt) as dt,
+        *
+
+    from base
+    where date_trunc('month', end_dt) > date_trunc('month', current_date)
+    and refund_amount is null
+
+
+),
+
+current_month as (
+
+    -- historical success payments
+    select
+
+        date_trunc('month', end_dt) as dt,
+        *
+    from base
+    where end_dt <= current_date - 1
+    and date_trunc('month', end_dt) >= date_trunc('month', current_date)
+    and renewed = 1
+
+    union all
+
+    -- upcoming payments
+    select
+
+        date_trunc('month', end_dt) as dt,
+        *
+    from base
+    where end_dt >= current_date
+    and date_trunc('month', end_dt) >= date_trunc('month', current_date)
+     and refund_amount is null
+
+    union all
+
+    -- unsuccessful payments
+    select
+
+        date_trunc('month', end_dt) as dt,
+        *
+    from base
+    where end_dt <= current_date - 1
+      and date_trunc('month', end_dt) >= date_trunc('month', current_date)
+      and renewed = 0
+
+),
+
+joined as (
+
+    select * from historical
+
+    union all
+
+    select * from upcoming
+
+    union all
+
+    select * from current_month
+
+),
 
 final as (
 
-    select * from {{ ref('int_subscription_renewals') }}
+    select distinct
+
+        *
+
+    from joined
 
 )
 
