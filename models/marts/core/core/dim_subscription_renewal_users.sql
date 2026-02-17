@@ -1,10 +1,23 @@
 -- models/marts/core/core/dim_subscription_renewal_users.sql
+-- grain: 1 record per user based on latest renewal
 
 with 
 
 base as (
 
     select * from {{ ref('fct_subscription_renewals') }}
+
+),
+
+latest_renewal as (
+
+    select
+        *
+    from base
+    qualify row_number() over (
+        partition by user_id
+        order by end_dt desc
+    ) = 1
 
 ),
 
@@ -18,12 +31,12 @@ final as (
 
     select 
     
-        b.user_id,
+        lr.user_id,
         u.* exclude (user_id)
         
-    from base b
+    from latest_renewal lr
     left join int_users u
-        on b.user_id = u.user_id
+        on lr.user_id = u.user_id
 
 )
 
