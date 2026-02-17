@@ -116,7 +116,7 @@ select
        - web breadth: 10%
     */
 
-    round(
+    ifnull(round(
         (
             /* recency score: 1 if opened in last 7d, 0 if >60d */
             (case
@@ -140,6 +140,6 @@ select
 
             + (least(coalesce(num_unique_web_posts_seen_last_30d, 0)::float / 8, 1) * 0.10)
         ) * 100
-    , 2) as engagement_score
+    , 2), 0) as engagement_score
 
 from final
