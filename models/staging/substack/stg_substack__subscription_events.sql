@@ -1,4 +1,4 @@
--- models/staging/substack/stg_subscription_events.sql
+-- models/staging/substack/stg_substack__subscription_events.sql
 
 with
 

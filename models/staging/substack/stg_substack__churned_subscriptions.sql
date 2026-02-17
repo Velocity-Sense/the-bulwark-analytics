@@ -1,4 +1,4 @@
--- models/staging/substack/stg_churned_subscriptions.sql
+-- models/staging/substack/stg_substack__churned_subscriptions.sql
 
 with
 
