@@ -87,13 +87,42 @@ joined as (
 
 ),
 
-final as (
+consolidated as (
 
     select distinct
 
         *
 
     from joined
+
+),
+
+final as (
+
+    select
+
+        -- ids
+        expiring_user_invoice_id,
+        stripe_subscription_id,
+        renewal_user_invoice_id,
+        user_id,
+
+        -- attributes
+        period_type,
+        expiring_value,
+        refund_amount,
+        renewal_value,
+        renewed,
+
+        -- dates
+        dt,
+        end_dt,
+        expiring_invoice_dt,
+        end_month,
+        is_historical_end_dt,
+        is_upcoming_end_dt,
+
+    from consolidated
 
 )
 
