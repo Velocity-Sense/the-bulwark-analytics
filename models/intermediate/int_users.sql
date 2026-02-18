@@ -83,7 +83,7 @@ select
     subscription_expires_at,
 
     /* metadata */
-    data_updated_at,
+    _data_updated_at,
 
     /* =========================
        simplified churn-focused engagement metrics
