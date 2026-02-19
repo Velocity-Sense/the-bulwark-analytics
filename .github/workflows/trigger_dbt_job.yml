@@ -1,0 +1,19 @@
+name: Trigger dbt Cloud Production Job
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-dbt-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger dbt Cloud Job
+        run: |
+          curl -X POST \
+            --fail \
+            -H "Authorization: Token ${{ secrets.DBT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"cause": "Triggered by merge to main"}' \
+            "https://cloud.getdbt.com/api/v2/accounts/${{ secrets.DBT_ACCOUNT_ID }}/jobs/${{ secrets.DBT_JOB_ID }}/run/"
