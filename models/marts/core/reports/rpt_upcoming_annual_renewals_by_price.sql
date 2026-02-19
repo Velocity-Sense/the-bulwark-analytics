@@ -11,7 +11,11 @@ subscription_renewals as (
 
 user_promo as (
 
-    select * from {{ ref('int_user_promo') }}
+    select
+        user_id,
+        max(case when is_trial_promo = false then 1 else 0 end) = 1 as has_non_trial_promo
+    from {{ ref('fct_user_coupons') }}
+    group by 1
 
 ),
 
@@ -34,7 +38,7 @@ labeled as (
 
   select
     u.end_month,
-    case when p.user_id is not null and p.is_trial_promo = false then 'promo'
+    case when p.user_id is not null and p.has_non_trial_promo then 'promo'
         else 'full_price' end as price_bucket,
     u.user_id,
     u.expiring_value
