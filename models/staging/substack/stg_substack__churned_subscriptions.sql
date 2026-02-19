@@ -64,13 +64,13 @@ final as (
         user_has_publication,
 
         -- date
+        last_seen_dt as churn_dt,
+        last_seen_at as churn_at,
         unsubscribed_at,
         last_subscribed_at,
         subscription_created_at,
         subscription_expires_at,
         subscription_updated_at,
-        last_seen_dt,
-        last_seen_at,
         last_opened_at,
         email_disabled_at,
         first_payment_at,
