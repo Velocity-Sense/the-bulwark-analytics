@@ -22,7 +22,9 @@ final as (
     where user_id is not null
       and nullif(trim(event_data:coupon::string), '') is not null
       and event = 'User Subscribed'
-    group by 1, 2
+    group by
+        user_id,
+        coupon_id
 
 )
 
