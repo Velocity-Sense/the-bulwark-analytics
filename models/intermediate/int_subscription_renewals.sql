@@ -37,6 +37,7 @@ renewal_matches as (
         og.stripe_subscription_id,
         og.user_invoice_id as expiring_user_invoice_id,
 
+        og.invoice_ts as expiring_invoice_at,
         og.invoice_dt as expiring_invoice_dt,
         og.end_dt,
         date_trunc('month', og.end_dt) as end_month,
@@ -48,6 +49,8 @@ renewal_matches as (
 
         rn.user_invoice_id as renewal_user_invoice_id,
         rn.amount_usd as renewal_value,
+        rn.invoice_ts as renewed_at,
+        rn.invoice_dt as renewed_date,
 
         iff(rn.user_invoice_id is not null, 1, 0) as renewed,
 
