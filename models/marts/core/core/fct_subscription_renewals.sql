@@ -117,7 +117,10 @@ final as (
         -- dates
         dt,
         end_dt,
+        expiring_invoice_at,
         expiring_invoice_dt,
+        renewed_at,
+        renewed_date,
         end_month,
         is_historical_end_dt,
         is_upcoming_end_dt,

@@ -21,6 +21,7 @@ renewals as (
         renewals.user_id,
         renewals.stripe_subscription_id,
         renewals.expiring_user_invoice_id,
+        renewals.expiring_invoice_at,
         renewals.expiring_invoice_dt,
         renewals.expiring_value,
         renewals.end_dt,
@@ -29,6 +30,8 @@ renewals as (
         renewals.renewal_user_invoice_id,
         renewals.renewal_value,
         renewals.refund_amount,
+        renewals.renewed_at,
+        renewals.renewed_date,
         promo_users.first_coupon_ts
     from {{ ref('fct_subscription_renewals') }} as renewals
     inner join promo_users
@@ -43,6 +46,7 @@ promo_annual_row as (
         user_id,
         stripe_subscription_id,
         expiring_user_invoice_id,
+        expiring_invoice_at,
         expiring_invoice_dt,
         expiring_value,
         end_dt,
@@ -50,7 +54,9 @@ promo_annual_row as (
         renewal_user_invoice_id,
         renewal_value,
         refund_amount,
-        first_coupon_ts
+        first_coupon_ts,
+        renewed_at,
+        renewed_date
     from renewals
     where period_type = 'annual'
     and (
@@ -65,18 +71,19 @@ promo_annual_row as (
 
 ),
 
--- check if the user has any monthly rows after their promo annual end_dt
+-- check if the user has any monthly rows after their promo annual end_dt within 45 days
 has_monthly_after_promo as (
 
     select
         renewals.user_id,
+        min(renewals.expiring_invoice_at) as first_monthly_invoice_at,
         min(renewals.expiring_invoice_dt) as first_monthly_invoice_dt,
         max(renewals.expiring_value) as monthly_expiring_value
     from renewals
     inner join promo_annual_row
         on renewals.user_id = promo_annual_row.user_id
     where renewals.period_type = 'monthly'
-      and renewals.expiring_invoice_dt >= promo_annual_row.end_dt - interval '30 days'
+      and renewals.expiring_invoice_dt >= promo_annual_row.end_dt - interval '45 days'
     group by 1
 
 ),
@@ -87,6 +94,7 @@ classified as (
         promo_annual_row.user_id,
         promo_annual_row.stripe_subscription_id,
         promo_annual_row.expiring_user_invoice_id,
+        promo_annual_row.expiring_invoice_at,
         promo_annual_row.expiring_invoice_dt,
         promo_annual_row.expiring_value as promo_expiring_value,
         promo_annual_row.end_dt as promo_end_dt,
@@ -95,6 +103,8 @@ classified as (
         promo_annual_row.renewal_value,
         promo_annual_row.refund_amount,
         promo_annual_row.first_coupon_ts,
+        ifnull(promo_annual_row.renewed_at, monthly.first_monthly_invoice_at) as renewed_at,
+        ifnull(promo_annual_row.renewed_date, monthly.first_monthly_invoice_dt) as renewed_date,
 
         case
             when promo_annual_row.refund_amount is not null
@@ -126,18 +136,20 @@ final as (
         stripe_subscription_id,
         expiring_user_invoice_id,
         renewal_user_invoice_id,
-
-        -- promo details
-        promo_expiring_value,
-        promo_end_dt,
-        expiring_invoice_dt,
-        first_coupon_ts,
-
+    
         -- outcome
         renewal_outcome,
+        renewed_at,
+        renewed_date,
         promo_annual_renewed,
         renewal_value,
         refund_amount,
+
+        -- promo details
+        first_coupon_ts,
+        promo_end_dt,
+        expiring_invoice_dt,
+        promo_expiring_value,
 
         -- monthly switch details
         first_monthly_invoice_dt,
